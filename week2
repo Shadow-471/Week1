@@ -1,0 +1,118 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Base class Person
+class Person {
+protected:
+    string name;
+    int age;
+
+public:
+    Person() : name(""), age(0) {} // Default constructor
+
+    // Constructor with parameters
+    Person(const string& name, int age) : name(name), age(age) {}
+
+    // Getter and setter functions
+    void setName(const string& name) { this->name = name; }
+    string getName() const { return name; }
+
+    void setAge(int age) { this->age = age; }
+    int getAge() const { return age; }
+
+    // Save information function (virtual)
+    virtual void Save_Information() {
+        // Default implementation for base class
+        cout << "Saving Person's information." << endl;
+    }
+
+    // Display information function (virtual)
+    virtual void Display_Information() const {
+        cout << "Person's Information:" << endl;
+        cout << "Name: " << name << endl;
+        cout << "Age: " << age << endl;
+    }
+};
+
+// Derived class Teacher from Person
+class Teacher : public Person {
+private:
+    string designation;
+
+public:
+    Teacher() : designation("") {} // Default constructor
+
+    // Constructor with parameters
+    Teacher(const string& name, int age, const string& designation)
+        : Person(name, age), designation(designation) {}
+
+    // Getter and setter function for designation
+    void setDesignation(const string& designation) { this->designation = designation; }
+    string getDesignation() const { return designation; }
+
+    // Override Save_Information function
+    void Save_Information() override {
+        cout << "Saving Teacher's information." << endl;
+        // Additional saving logic specific to Teacher if needed
+    }
+
+    // Override Display_Information function
+    void Display_Information() const override {
+        cout << "Teacher's Information:" << endl;
+        Person::Display_Information(); // Call base class display method
+        cout << "Designation: " << designation << endl;
+    }
+};
+
+// Derived class Student from Person
+class Student : public Person {
+private:
+    int rollNumber;
+
+public:
+    Student() : rollNumber(0) {} // Default constructor
+
+    // Constructor with parameters
+    Student(const string& name, int age, int rollNumber)
+        : Person(name, age), rollNumber(rollNumber) {}
+
+    // Getter and setter function for rollNumber
+    void setRollNumber(int rollNumber) { this->rollNumber = rollNumber; }
+    int getRollNumber() const { return rollNumber; }
+
+    // Override Save_Information function
+    void Save_Information() override {
+        cout << "Saving Student's information." << endl;
+        // Additional saving logic specific to Student if needed
+    }
+
+    // Override Display_Information function
+    void Display_Information() const override {
+        cout << "Student's Information:" << endl;
+        Person::Display_Information(); // Call base class display method
+        cout << "Roll Number: " << rollNumber << endl;
+    }
+};
+
+int main() {
+    // Example usage
+    Teacher t("John Doe", 35, "Mathematics");
+    Student s("Alice Smith", 18, 12345);
+
+    // Polymorphism using base class pointers
+    Person* person1 = &t; // Pointer to Teacher object
+    Person* person2 = &s; // Pointer to Student object
+
+    // Displaying information using polymorphism
+    cout << "Displaying Teacher's Information:" << endl;
+    person1->Display_Information();
+    cout << endl;
+
+    cout << "Displaying Student's Information:" << endl;
+    person2->Display_Information();
+    cout << endl;
+
+    return 0;
+}
