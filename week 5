@@ -1,0 +1,168 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Node class (Student class)
+class Student {
+public:
+    string name;
+    int marks;
+    Student* next;
+
+    Student(const string& name, int marks) : name(name), marks(marks), next(nullptr) {}
+};
+
+// Stack class implementing stack operations using linked list
+class Stack {
+private:
+    Student* top;  // Pointer to the top of the stack
+
+public:
+    Stack() : top(nullptr) {}
+
+    // Push a new student onto the stack
+    void push(const string& name, int marks) {
+        Student* newStudent = new Student(name, marks);
+        newStudent->next = top;
+        top = newStudent;
+    }
+
+    // Pop a student from the stack
+    void pop() {
+        if (top != nullptr) {
+            Student* temp = top;
+            top = top->next;
+            delete temp;
+        } else {
+            cout << "Stack is empty!" << endl;
+        }
+    }
+
+    // Display all students in the stack
+    void display() const {
+        Student* current = top;
+        if (current == nullptr) {
+            cout << "Stack is empty!" << endl;
+            return;
+        }
+        while (current != nullptr) {
+            cout << "Name: " << current->name << ", Marks: " << current->marks << endl;
+            current = current->next;
+        }
+    }
+
+    // Display top 3 students based on marks
+    void displayTop3() {
+        if (top == nullptr) {
+            cout << "Stack is empty!" << endl;
+            return;
+        }
+
+        // Use secondary stack to store the students for sorting
+        Stack secondary;
+        while (top != nullptr) {
+            Student* temp = top;
+            top = top->next;
+            temp->next = nullptr;
+            secondary.push(temp->name, temp->marks);
+            delete temp;
+        }
+
+        // Sort students in descending order based on marks
+        Student* sortedTop = nullptr;
+        while (secondary.top != nullptr) {
+            Student* current = secondary.top;
+            secondary.top = secondary.top->next;
+            current->next = nullptr;
+
+            if (sortedTop == nullptr || sortedTop->marks < current->marks) {
+                current->next = sortedTop;
+                sortedTop = current;
+            } else {
+                Student* search = sortedTop;
+                while (search->next != nullptr && search->next->marks >= current->marks) {
+                    search = search->next;
+                }
+                current->next = search->next;
+                search->next = current;
+            }
+        }
+
+        // Display top 3 students
+        cout << "Top 3 students based on marks:" << endl;
+        int count = 0;
+        Student* current = sortedTop;
+        while (current != nullptr && count < 3) {
+            cout << "Name: " << current->name << ", Marks: " << current->marks << endl;
+            current = current->next;
+            count++;
+        }
+
+        // Clean up sorted list
+        while (sortedTop != nullptr) {
+            Student* temp = sortedTop;
+            sortedTop = sortedTop->next;
+            delete temp;
+        }
+    }
+
+    // Destructor to clean up the stack
+    ~Stack() {
+        while (top != nullptr) {
+            Student* temp = top;
+            top = top->next;
+            delete temp;
+        }
+    }
+};
+
+int main() {
+    Stack stack;
+    int choice;
+    string name;
+    int marks;
+
+    do {
+        cout << "1. Add a student to the stack" << endl;
+        cout << "2. Remove a student from the stack" << endl;
+        cout << "3. Display all students in the stack" << endl;
+        cout << "4. Display top 3 students based on marks" << endl;
+        cout << "5. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // Ignore newline left in the input buffer
+
+        switch (choice) {
+            case 1:
+                cout << "Enter student name: ";
+                getline(cin, name);
+                cout << "Enter student marks: ";
+                cin >> marks;
+                stack.push(name, marks);
+                break;
+
+            case 2:
+                stack.pop();
+                break;
+
+            case 3:
+                stack.display();
+                break;
+
+            case 4:
+                stack.displayTop3();
+                break;
+
+            case 5:
+                cout << "Exiting program." << endl;
+                break;
+
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+                break;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
